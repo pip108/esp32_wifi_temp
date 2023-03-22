@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wifi-temp-sink-svc
+spec:
+  type: LoadBalancer
+  loadBalancerIP: 10.99.99.105
+  selector:
+    app: wifi-temp-sink
+  ports:
+  - port: 80
+    targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wifi-temp-sink
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wifi-temp-sink
+  template:
+    metadata:
+      labels:
+        app: wifi-temp-sink
+    spec:
+      containers:
+      - name: wifi-temp-sink
+        image: registry.pattern.blue/iot-prometheus:latest
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8080
